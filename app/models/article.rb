@@ -71,6 +71,22 @@ class Article < Content
     end
   end
 
+  def merge_with(articleid)
+    tomerge = Article.find_by_id(articleid)
+    if not self.id or not tomerge.id
+      return false
+    end
+
+    self.body = self.body + "\n" + tomerge.body
+    self.comments << tomerge.comments
+    self.save!
+
+    tomerge = Article.find_by_id(articleid)
+    tomerge.destroy
+
+    return true
+  end
+
   def set_permalink
     return if self.state == 'draft'
     self.permalink = self.title.to_permalink if self.permalink.nil? or self.permalink.empty?
